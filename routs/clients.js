@@ -1,6 +1,6 @@
 //---MODULES---
 const express = require('express');
-const constants = require('../constants');
+const constants = require('../const_var');
 //go
 const router = express.Router();
 //testing
