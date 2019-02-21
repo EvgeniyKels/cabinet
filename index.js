@@ -25,9 +25,9 @@ application.use(morgan((tokens, req, res) => { //todo ма зэ токенс
         tokens['response-time'](req, res), 'ms'
     ].join(' ')
 }, {stream : logStream}));
+//configuration
 
 //routing
-
 application.use(express.json());
 application.use('/clients', clients); //set routs
 application.use('/materials', clients); //set routs
