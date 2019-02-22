@@ -4,3 +4,24 @@ client
     "birthDate":"1983.05.05",
     "workIn":"plant"
 }
+
+http://localhost:5000/clients?name=Masha
+const name = req.query.name;
+
+http://localhost:5000/clients/Masha
+const name = req.params.name;
+
+http://localhost:5000/clients/
+{
+    "name":"Masha",
+    "birthDate":"1983.05.05",
+    "workIn":"plant"
+}
+
+http://localhost:5000/clients/Masha
+http://localhost:5000/clients/Masha PUT
+{
+    "workIn":"NNNplant"
+}
+http://localhost:5000/clients/
+http://localhost:5000/clients?name=Masha DELETE

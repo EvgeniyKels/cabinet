@@ -1,62 +1,99 @@
 //---MODULES---
 const express = require('express');
 const constants = require('../const_var');
-//go
 const router = express.Router();
-//testing
-const dataBase = {};
+const dataBase = require('../database');
+const ModelClients = dataBase.modelClients;
+
+const Joi = require('joi');
+const validate=require('../validators/validator');
+const schema = {
+    name:Joi.string().required(),
+    birthDate:Joi.string().required(),
+    workIn:Joi.string().required()
+};
+const updateSchema = {
+    workIn:Joi.string()
+};
 
 //create new CLIENT
-router.post('/', (req, res) => {
-    const client = req.body;
-    if (client.name in dataBase) {
-        res.send(constants.CLIENT_EXISTS);
-        return;
+router.post('/', async(req, res) => {
+    if (validate(req, res, schema)){
+        const clientTab = new ModelClients(req.body);
+        try {
+            let client = await clientTab.save();
+            res.send(constants.CLIENT_ADDED);
+        } catch (e) {
+            res.status(400).send(constants.CLIENT_NOT_ADDED); //todo проверить статус
+        }
     }
-    dataBase[client.name] = client;
-    res.send(constants.CLIENT_ADDED);
 });
 
 //get user by id
 // http://localhost:5000/clients?name=Masha  '/'    const name = req.query.name;
 //
-router.get('/:name', (req, res) => {
+router.get('/:name', async(req, res) => {
     const name = req.params.name;
-    if (!(name in dataBase)){
-        res.send(constants.CLIENT_NOT_EXISTS);
-        return;
+    try {
+        const find = await ModelClients.find({name: name});
+        let obj = {};
+        find.forEach((el) => {
+           const clientName = el.name;
+           obj[clientName] = el
+        });
+        res.send(obj)
+    } catch (e) {
+        res.send(e)
     }
-    res.send(dataBase[name])
 });
 
 //get all users
-router.get('/', (req, res) => {
-    res.send(dataBase);
+router.get('/', async(req, res) => {
+    try {
+        const find = await ModelClients.find();
+        let obj = {};
+        find.forEach((el) => {
+            const clientName = el.name;
+            obj[clientName] = el
+        });
+        res.send(obj)
+    } catch (e) {
+        res.send(e)
+    }
 });
 
 //update user bu id
-router.put('/:name', (req, res) => {
-    const name = req.params.name;
-    const body = req.body;
-    if (!(name in dataBase)){
-        res.send(constants.CLIENT_NOT_EXISTS);
-        return;
+router.put('/:name', async (req, res) => {
+    if (validate(req, res, updateSchema)){
+        const name = req.params.name;
+        try {
+            const client = await ModelClients.find({name : name});
+            if (client.length === 0) {
+                res.status(400).send(constants.CLIENT_NOT_EXISTS)
+                return
+            }
+            const clientElement = client[0];
+                Object.entries(req.body).forEach((el) => {
+                    const key = el[0];
+                    clientElement[key] = el[1]; //todo set И провреить функциональность с несколькими запросами
+                });
+            await clientElement.save();
+            res.send(constants.CLIENT_UPDATED);
+        } catch (e) {
+            res.status(400).send(constants.CLIENT_NOT_UPDATED); //todo проверить статус
+        }
     }
-    const dataBaseElement = dataBase[name];
-    Object.entries(body).forEach((el) => {
-        dataBaseElement[el[0]] = el[1];
-    });
-    res.send(dataBaseElement);
 });
 
 //remove user from db
-router.delete('/', (req, res) => {
+router.delete('/', async(req, res) => {
     const name = req.query.name;
-    if (!(name in dataBase)){
-        res.send(constants.CLIENT_NOT_EXISTS);
-        return;
+    try {
+        const query = await ModelClients.deleteOne({name: name});
+        res.send(constants.CLIENT_DELETED)
+    } catch (e) {
+        res.sendStatus(400).send(constants.CLIENT_NOT_DELETED); //todo проверить статус
     }
-    res.send(delete dataBase[name])
 });
 
 module.exports = router;
