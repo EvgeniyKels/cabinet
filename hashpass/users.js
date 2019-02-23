@@ -3,7 +3,8 @@ const constants = require('../const_var');
 const router = express.Router();
 const dataBase = require('../database');
 const UserModel = dataBase.modelUsers;
-const hash = require('../hasher');
+const hash = require('./hasher');
+const auth = require('./auth');
 const secret = 'secret'; //todo должен быть в файлах конфигурации
 
 const jwt = require('jsonwebtoken');
@@ -73,7 +74,12 @@ router.post("/login", async (req, res) => {
 //     }
 // });
 
-router.get('/', async(req, res) => {
+router.get('/', auth.token, async(req, res) => {
+    const requireRole = 'admin'; //todo roles array
+    if(!auth.rollechecker(requireRole, req.user)) {
+        res.status(400).send('no role needed');
+        return
+    }
     try {
         const find = await UserModel.find();
         let obj = {};
@@ -87,7 +93,8 @@ router.get('/', async(req, res) => {
     }
 });
 
-router.put('/:name', async (req, res) => {
+router.put('/:name', auth.token, async (req, res) => {
+    const requireRole = 'admin';
     if (validate(req, res, updateSchema)){
         const body = req.body;
         const name = req.params.name;
@@ -118,7 +125,7 @@ router.put('/:name', async (req, res) => {
     }
 });
 
-router.delete('/', async(req, res) => {
+router.delete('/', auth.token, async(req, res) => {
     const name = req.query.name;
     try {
         const query = await UserModel.deleteOne({name: name});

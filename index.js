@@ -6,7 +6,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 // inner modules
 const clients = require('./routs/clients');
-const users = require('./routs/users');
+const users = require('./hashpass/users');
 const materials = require('./routs/materials');
 const prep = require('./additional');
 const conf = require('config');
