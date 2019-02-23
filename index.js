@@ -10,7 +10,7 @@ const users = require('./routs/users');
 const materials = require('./routs/materials');
 const prep = require('./additional');
 const conf = require('config');
-const connectToDb = require('./database').connect;
+const connectToDb = require('./database').connect; //todo автоподключение через N времени
 application.use(cors());
 //logging
 const devlogStream = prep.createLogDir;

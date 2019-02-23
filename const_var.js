@@ -6,6 +6,7 @@ const clientUpdated = 'client updated';
 const clientNotUpdated = 'client not updated';
 const clientDeleted = 'client deleted';
 const clientNotDeleted = 'client not deleted';
+const passwordComplexityIsInsufficient = 'password complexity is insufficient';
 
 const userExist = 'user exist';
 const userAdded = 'user added';
@@ -39,3 +40,4 @@ module.exports.USER_NOT_EXISTS = userNotExist;
 
 module.exports.DEV_LOG_FILE_PATH = devLogFilePath;
 module.exports.PROD_LOG_FILE_PATH = prodLogFilePath;
+module.exports.BAD_PASSWORD = passwordComplexityIsInsufficient;

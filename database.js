@@ -10,7 +10,12 @@ if (dbPassword.length === 0 || !dbPassword) {
 }
 let uri = `mongodb://${dbUsername}:${dbPassword}@${hostnamePort}/${dbname}`;
 async function connect() {
-    await mongoose.connect(uri, { useNewUrlParser: true });
+    try {
+        await mongoose.connect(uri, {useNewUrlParser: true});
+    } catch (e) {
+        console.log('ups')
+        return
+    }
     uri = `mongodb://${dbUsername}:*************@${hostnamePort}/$******`;
     console.log(`connected ${uri} succesfully`)
 }
